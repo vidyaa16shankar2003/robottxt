@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    .select-container {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+</style>
+</head>
+<body>
+    <h1>Robots.txt Generator</h1>
+    <div class="select-container">
+        <div>
+            <h3>Default-All robots are:</h3>
+            <select>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+        <div>
+            <h3>Crawl-delay</h3>
+            <select id="crawlDelaySelect">
+                <option value="Default-No delay">Default-No delay</option>
+                <option value="5 Seconds">5 Seconds</option>
+                <option value="10 Seconds">10 Seconds</option>
+                <option value="15 Seconds">15 Seconds</option>
+                <option value="20 Seconds">20 Seconds</option>
+            </select>
+        </div>
+    </div>
+    <h3>Sitemap: (leave blank if you don't have)</h3>
+    <textarea id="sitemap" rows="1" cols="50"></textarea>
+    <h1>Google</h1>
+    <div class="select-container">
+        <div>
+            <h3>Google</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+        <div>
+            <h3>Google Image</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+        <div>
+            <h3>Google Mobile</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+    </div>
+    <h1>Other Search Engines</h1>
+    <div class="select-container">
+        <div>
+            <h3>MSN Search</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+        <div>
+            <h3>Yahoo</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+        <div>
+            <h3>Yahoo MM</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+    </div>
+    <div class="select-container">
+        <div>
+            <h3>Yahoo Blogs</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+        <div>
+            <h3>Ask/Teoma</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+        <div>
+            <h3>Gigablast</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+    </div>
+    <div class="select-container">
+        <div>
+            <h3>DMOZ Checker</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+        <div>
+            <h3>Nutch</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+        <div>
+            <h3>Alexa/Wayback</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+    </div>
+    <div class="select-container">
+        <div>
+            <h3>Baidu</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+        <div>
+            <h3>Naver</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+        <div>
+            <h3>MSN PicSearch</h3>
+            <select>
+                <option value="Same as default">Same as default</option>
+                <option value="Allowed">Allowed</option>
+                <option value="Refused">Refused</option>
+            </select>
+        </div>
+    </div>
+    <h1>Restricted Directories</h1>
+    <textarea id="restricteddirectories" rows="1" cols="50"></textarea>
+    <h1>Add Custom Bot</h1>
+    <textarea id="addcustombot" rows="1" cols="50"></textarea>
+    <button id="generateButton">Generate</button>
+    <div id="outputContainer"></div>
+    <script>
+        var generateButton=document.getElementById("generateButton");
+        generateButton.addEventListener("click", function(){
+            var defaultSelect=document.querySelector(".select-container select");
+            var crawlDelaySelect=document.getElementById("crawlDelaySelect");
+            var sitemapTextarea=document.getElementById("sitemap");
+            var allSelects=document.querySelectorAll(".select-container select");
+
+            var selectedDefault=getSelectValues(defaultSelect);
+            var selectedCrawlDelay=getSelectValues(crawlDelaySelect);
+            var enteredSitemap=sitemapTextarea.value;
+            var selectedValues=Array.from(allSelects).map(select=>getSelectValues(select));
+
+            var allowedRobots=[];
+            var refusedRobots=[];
+            var sameAsDefaultRobots=[];
+
+            for (let i=0; i<selectedValues.length; i++){
+                var robotName=getRobotName(i);
+                if (selectedValues[i][0]==="Allowed"){
+                    allowedRobots.push(robotName);
+                } 
+                else if(selectedValues[i][0]==="Refused"){
+                    refusedRobots.push(robotName);
+                } 
+                else{
+                    sameAsDefaultRobots.push(robotName);
+                }
+            }
+            var restrictedDirectories=document.getElementById("restricteddirectories").value;
+            var customBots=document.getElementById("addcustombot").value;
+
+            var restrictedDirectoriesList=restrictedDirectories.split(",").map(item=>item.trim());
+            var customBotsList=customBots.split(",").map(item=>item.trim());
+        
+            displayoutput(restrictedDirectoriesList,customBotsList ,allowedRobots, refusedRobots, sameAsDefaultRobots, selectedDefault, selectedCrawlDelay, enteredSitemap, selectedValues);
+        });
+
+        function getSelectValues(selectElement){
+            var selectedOptions=Array.from(selectElement.selectedOptions);
+            return selectedOptions.map(option=>option.value);
+        }
+        
+        function getRobotName(index){
+            var robotNames=[
+                "Default-All robots are",
+                "Crawl-delay",
+                "Googlebot",
+                "googlebot-image",
+                "googlebot-mobile",
+                "MSNBot",
+                "Slurp",
+                "yahoo-mmcrawler",
+                "yahoo-blogs/v3.9",
+                "Teoma",
+                "Gigabot",
+                "Robozilla",
+                "Nutch",
+                "ia_archiver",
+                "baiduspider",
+                "naverbot",
+                "psbot"
+            ];
+            return robotNames[index];
+        }
+
+        function displayoutput(restrictedDirectoriesList,customBotsList ,allowedRobots, refusedRobots, sameAsDefaultRobots, selectedDefault, selectedCrawlDelay, enteredSitemap, selectedValues){
+            var crawlDelayValue;
+            if (selectedCrawlDelay[0]==="Default-No delay"){
+                crawlDelayValue="";
+            } 
+            else{
+                crawlDelayValue=selectedCrawlDelay[0].substring(0, 2);
+            }
+
+            var output="";
+
+            if (selectedDefault[0]==="Allowed"){
+                if (refusedRobots.length>0){
+                    for (let i=0; i<refusedRobots.length; i++){
+                        output+="User-agent: "+refusedRobots[i]+"<br>";
+                        output+="Disallow: /<br>";   
+                    }
+                }
+                if (customBotsList.length>0){
+                    for (let i=0; i<customBotsList.length; i++){
+                        if (customBotsList[i]!==""){
+                            output+="User-agent: "+customBotsList[i]+"<br>";
+                            output+="Disallow: /<br>";
+                        }
+                    }
+                }
+                if (allowedRobots.length>0){
+                    for (let i=0; i<allowedRobots.length; i++){
+                        if (allowedRobots[i]!=="Default-All robots are"){
+                            output+="User-agent: "+allowedRobots[i]+"<br>";
+                            output+="Disallow: <br>";
+                        }
+                    }
+                }
+                output+="User-agent: *<br>";
+                output+="Disallow:<br>";
+                if (restrictedDirectoriesList.length>0){
+                    for (let i=0; i<restrictedDirectoriesList.length; i++){
+                        if (restrictedDirectoriesList[i]!==""){
+                            output+="Disallow: "+restrictedDirectoriesList[i]+"<br>";
+                        }
+                    }
+                }
+                if (crawlDelayValue!==""){
+                    output+="Crawl-delay: "+crawlDelayValue+"<br>";
+                }
+
+                if (enteredSitemap.trim()!==""){
+                    output+="Sitemap: "+enteredSitemap+"<br>";
+                }
+            } 
+            else if (selectedDefault[0]==="Refused"){
+                if (refusedRobots.length>0){
+                    for (let i=0; i<refusedRobots.length; i++){
+                        if (refusedRobots[i]!=="Default-All robots are"){
+                            output+="User-agent: "+refusedRobots[i]+"<br>";
+                            output+="Disallow: /<br>";
+                        }
+                    }
+                }
+                if (customBotsList.length>0){
+                    for (let i=0; i<customBotsList.length; i++){
+                        if (customBotsList[i]!==""){
+                            output+="User-agent: "+customBotsList[i]+"<br>";
+                            output+="Disallow: /<br>";
+                        }
+                    }
+                }
+                if (allowedRobots.length>0){
+                    for (let i=0; i<allowedRobots.length; i++){
+                        output+="User-agent: "+allowedRobots[i]+"<br>";
+                        output+="Disallow: <br>";
+                    }
+                }
+                output+="User-agent: *<br>";
+                output+="Disallow: /<br>";
+                if (restrictedDirectoriesList.length>0){
+                    for (let i=0; i<restrictedDirectoriesList.length; i++){
+                        if (restrictedDirectoriesList[i]!==""){
+                            output+="Disallow: "+restrictedDirectoriesList[i]+"<br>";
+                        }
+                    }
+                }
+                if (crawlDelayValue!==""){
+                    output+="Crawl-delay: "+crawlDelayValue+"<br>";
+                }
+                if (enteredSitemap.trim()!==""){
+                    output+="Sitemap: "+enteredSitemap+"<br>";
+                }
+            }
+            document.getElementById("outputContainer").innerHTML = output;
+        };
+
+    </script>
+</body>
+</html>
